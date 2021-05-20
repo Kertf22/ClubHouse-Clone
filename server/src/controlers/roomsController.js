@@ -1,34 +1,148 @@
 import Attendee from "../entities/attendee.js"
 import Room from "../entities/room.js"
 import { constants } from "../util/constants.js"
+import CustomMap from "../util/customMap.js"
 
 export default class RoomsController {
     #users = new Map()
 
-    constructor(){
-        this.rooms = new Map()
+    constructor({roomsPubSub}){
+        this.roomsPubSub = roomsPubSub
+        this.rooms = new CustomMap({
+            observer: this.#roomObserver(),
+            customMapper: this.#mapRoom.bind(this)
+        })
     }
 
+
+    #roomObserver() {
+        return {
+            notify: (rooms) => this.notifyRoomsSubscribers(rooms)
+        }
+    }
+
+    speakAnswer(socket,{answer,user}){
+        const userId = user.id
+        const currentUser = this.#users.get(userId)
+        const updatedUser = new Attendee({
+            ...currentUser,
+            isSpeaker: answer
+        })
+        this.#users.set(user.id, updatedUser)
+
+        const roomId = user.roomId
+        const room = this.rooms.get(roomId)
+        const userOnRoom = [...room.users.values()].find(({id}) => id === userId)
+        room.users.delete(userOnRoom)
+        room.users.add(updatedUser)
+        this.rooms.set(roomId, room)
+
+        // volta para ele mesmo
+        socket.emit(constants.events.UPGRADE_USER_PERMISSION, updatedUser)
+        this.#notifyUserProfileUpgrade(socket, roomId, updatedUser)
+
+    }
+    speakRequest(socket) {
+        const userId = socket.id
+        const user = this.#users.get(userId)
+        const roomId = user.roomId
+        const owner = this.rooms.get(roomId)?.owner
+        socket.to(owner.id).emit(constants.events.SPEAK_REQUEST, user)
+    }
+    notifyRoomsSubscribers(rooms) {
+        const event = constants.events.LOBBY_UPDATED
+        this.roomsPubSub.emit(event, [...rooms.values()])
+    }
     onNewConnection(socket) {
         const { id } = socket
         console.log("connection stablished with", id)
-        this.#updateGlobalUserData(id, )
+        this.#updateGlobalUserData(id)
     }
 
+    disconnect(socket) {
+        console.log('disconnect', socket.id)
+        this.#logoutUser(socket)
+    }
+
+    #logoutUser(socket) {
+        const userId = socket.id
+        const user = this.#users.get(userId)
+        const roomId = user.roomId
+
+        // remover user da lista de usuarios
+        this.#users.delete(userId)
+
+
+        // caso seja um usuario sujeira que estava em uma sala que não existe mais
+        if(!this.rooms.has(roomId)) {
+            return
+        }
+
+        const room = this.rooms.get(roomId)
+        const toBeRemoved = [...room.users].find(({ id }) => id === userId)
+
+        // removemos o usuario da sala,
+        room.users.delete(toBeRemoved)
+
+        //se não tiver mais nenhum usuario na sala, matamos a sala
+        if(!room.users.size){
+            this.rooms.delete(roomId)
+            return;
+        }
+
+        const disconnectUserWasAnOwner = userId === room.owner.id
+        const onlyOneUserLeft = room.users.size === 1
+
+        //validar se tem somente um usuario ou se o usuario era o dono da sala
+        if(onlyOneUserLeft || disconnectUserWasAnOwner) {
+            room.owner = this.#getNewRoomOwner(room, socket)
+        }
+
+        // atualiza a room no final
+        this.rooms.set(roomId, room)
+
+        // notifica a saça qie p isiarop se desconectou
+        socket.to(roomId).emit(constants.events.USER_DISCONNECTED, user)
+    }
+
+    #notifyUserProfileUpgrade(socket, roomId, user) {
+
+        socket.to(roomId).emit(constants.events.UPGRADE_USER_PERMISSION, user)
+    }
+    #getNewRoomOwner(room, socket,roomId){
+        const users = [...room.users.values()]
+        const activeSpeakers = users.find(user => user.isSpeaker)
+
+        // se quem descpmectpi era o dono,passa a liderança para o proximo
+        // se não houver speakers, ele pega o attendee mais antigo (primeira posição)
+        const [newOwner] = activeSpeakers ? [activeSpeakers] : users
+        newOwner.isSpeaker = true
+
+        const outdatedUser = this.#users.get(newOwner.id)
+        const updatedUser = new Attendee({
+            ...outdatedUser,
+            ...newOwner
+        })
+        this.#users.set(newOwner.id,updatedUser)
+
+        this.#notifyUserProfileUpgrade(socket, room.id, newOwner)
+        return newOwner
+    }
     joinRoom(socket, {user, room}){
         const userId = user.id = socket.id 
         const roomId = room.id
  
         const updatedUserData = this.#updateGlobalUserData(userId, user, roomId)
-
         const updatedRoom = this.#joinUserRoom(socket, updatedUserData, room)
         this.#notifyUsersOnRoom(socket, roomId, updatedUserData)
         this.#replayWithActiveUsers(socket, updatedRoom.users)
     }
+
     #replayWithActiveUsers(socket, users) {
         const event = constants.events.LOBBY_UPDATED
         socket.emit(event, [...users.values()])
     }
+
     #notifyUsersOnRoom(socket, roomId, user) {
        const event = constants.events.USER_CONNECTED
        socket.to(roomId).emit(event, user)

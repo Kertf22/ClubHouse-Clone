@@ -5,6 +5,10 @@ export const constants = {
 
         JOIN_ROOM : "joinRoom",
 
-        LOBBY_UPDATED: "lobbyUpdated"
+        LOBBY_UPDATED: "lobbyUpdated",
+        UPGRADE_USER_PERMISSION: "upgadeUserPermission",
+         
+        SPEAK_REQUEST: 'speakRequest',
+        SPEAK_ANSWER: 'speakAnswer'
     }
 }

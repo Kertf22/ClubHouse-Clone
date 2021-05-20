@@ -26,7 +26,7 @@ export default class SocketBuilder {
         const socket = globalThis.io.connect(this.socketUrl, {
             withCredentials: false
         })
-        socket.on("connection", () => console.log("connected"))
+        socket.on("connect", () => console.log("connected"))
 
         socket.on(constants.events.USER_CONNECTED, this.OnUserConnected)
         socket.on(constants.events.USER_DISCONNECTED, this.OnUserDisconnected)
