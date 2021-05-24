@@ -2,7 +2,7 @@
 
 ## Checklist Features
 
-- [] O app deve funcionar na Web, Android e IOS
+- [x] O app deve funcionar na Web, Android e IOS
 - Login
   - [x] Deve ter login com GitHub
     - [x] Se houver dados do usuario em localStorage deve ir para lobby direto
@@ -36,4 +36,4 @@
       - [x] Pode pedir upgrade de perfil ao dono da sala
         - Ao ser aprovado
           - [x] Reinicia todas as suas chamas ativas com os usuarios da sala
-          - [ ] Recebe as permissões do perfil speaker
+          - [x] Recebe as permissões do perfil speaker
