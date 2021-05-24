@@ -17,7 +17,7 @@ export default class SocketServer {
                 route.on('connection', socket => {
                     for ( const [functionName, functionValue] of events) {
                         socket.on(functionName, (...args) => functionValue(socket, ...args))
-                    
+
                     }  
                     eventEmitter.emit(constants.events.USER_CONNECTED, socket)
                 })
@@ -27,30 +27,28 @@ export default class SocketServer {
     }
 
     async start() {
-        const server = http.createServer((req, res) => {
-            res.writeHead(200, {
-                'Access-Control-Allow-Origin': "*",
-                'Access-Control-Allow-Methods': "OPTIONS,POST,GET"
+        const server = http.createServer((request, response) => {
+            response.writeHead(200, {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             })
 
-            res.end("hey there!!")
+            response.end('hey there!!')
         })
 
         this.#io = new Server(server, {
             cors: {
-                origin: "*",
+                origin: '*',
                 credentials: false
             }
         })
 
 
 
-
         return new Promise((resolve, reject) => {
-            server.on("error", reject)
+            server.on('error', reject)
 
             server.listen(this.port, () => resolve(server))
         })
-
     }
 }

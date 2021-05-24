@@ -7,11 +7,11 @@ class Attendee {
 }
 
 export default class Room {
-    constructor({ id,topic, subTopic, roomlink, attendeesCount, speakersCount, featuredAttendees, owner }) {
+    constructor({ id,topic, subTopic, roomLink, attendeesCount, speakersCount, featuredAttendees, owner }) {
         this.id = id
         this.topic = topic
         this.subTopic = subTopic || "Conversinha da gasta"
-        this.roomlink = roomlink
+        this.roomLink = roomLink
         this.attendeesCount = attendeesCount
         this.speakersCount = speakersCount 
         this.featuredAttendees = featuredAttendees?.map(attendee => new Attendee(attendee))

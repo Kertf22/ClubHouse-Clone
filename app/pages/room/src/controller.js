@@ -11,20 +11,17 @@ export default class RoomController {
 
         
         this.socket = {}
-        this.peer = {}
     }
 
     static async initialize(deps){
-
         return new RoomController(deps).initialize()
     }
 
     async initialize() {
-        this.roomService.init()
         this._stepViewEvent()
+        this.roomService.init()
         this.socket = this._setupSocket()
         this.roomService.setCurrentPeer(await this._setupWebRTC()) 
-
     }
 
 
@@ -47,7 +44,7 @@ export default class RoomController {
         }
     }
     _setupSocket() {
-        const socket = this.socketBuilder
+        return this.socketBuilder
             .setOnUserConnected(this.onUserConnected())
             .setOnUserDisconnected(this.onUserDisconnected())
             .setOnRoomUpdated(this.onRoomUpdated())
@@ -55,7 +52,6 @@ export default class RoomController {
             .setOnSpeakRequested(this.OnSpeakRequested())
             .build()
 
-        return socket
     }
 
     OnSpeakRequested() {
@@ -127,6 +123,7 @@ export default class RoomController {
     OnPeerError() {
         return (error) => { 
             console.log("Bad call",error)
+
         }
     }
 

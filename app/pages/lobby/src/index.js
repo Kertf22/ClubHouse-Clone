@@ -1,12 +1,13 @@
 
 import { constants } from "../../_shered/constants.js";
+import UserDb from "../../_shered/userDb.js";
 import LobbyController from "./controller.js";
 import LobbySocketBuilder from "./util/lobbySocketBuilder.js";
 import View from "./view.js";
 
-const user = {
-    img:"../../assets/favicon.jpeg",
-    username:"Paulo Hercílio" + Date.now()
+const user = UserDb.get()
+if(!Object.keys(user).length){
+    View.redirectToLogin()
 }
 
 const socketBuilder = new LobbySocketBuilder({

@@ -1,6 +1,6 @@
 class PeerCustomModule extends globalThis.Peer {
     constructor({config, onCall}) {
-        super(config)
+        super(...config)
 
         this.onCall = onCall
     }
@@ -68,17 +68,18 @@ export default class PeerBuilder {
         call.on('close', () => this.OnCallClose(call))
 
         this.OnCallReeceived(call)
-    }
-    build() {
-        //o peer recebe uma lista de argumentos
 
+    }
+    async build() {
+        //o peer recebe uma lista de argumentos
+  
         const peer = new PeerCustomModule({
             config:[...this.peerConfig],
             onCall: this._prepareCallEvent.bind(this)})
 
         peer.on('error', this.OnErro)
-        peer.on("call", this._prepareCallEvent.bind(this))
-
+        peer.on('call', this._prepareCallEvent.bind(this))
+        
         return new Promise((resolve) => peer.on('open', () => {
             this.OnConnectionioOpened(peer)
             return resolve(peer)

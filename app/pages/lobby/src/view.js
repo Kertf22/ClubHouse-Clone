@@ -1,3 +1,4 @@
+import { constants } from "../../_shered/constants.js";
 import Room from "./entities/room.js"
 import getTemplate from "./templates/lobbyItem.js"
 
@@ -14,6 +15,9 @@ export default class View {
         roomGrid.innerHTML = ''
     }
 
+    static redirectToLogin() {
+        window.location = constants.pages.login
+    }
     static readirectToRoom(topic = ''){
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2)
 

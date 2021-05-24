@@ -1,7 +1,7 @@
 import UserStream from "./entities/userStream.js"
 
 export default class RoomService {
-    constructor({ media }) {
+    constructor({ media }) {        
 
         this.media = media
         this.currentPeer = {}
@@ -16,6 +16,7 @@ export default class RoomService {
             stream : await this.media.getUserAudio(),
             isFake: false
         })
+
     }
     setCurrentPeer(peer){
         this.currentPeer = peer

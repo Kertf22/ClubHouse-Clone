@@ -15,7 +15,7 @@ export default function getTemplate(room = new Room()){
     const { owner } = room
 
     return `
-        <a  id=${room.id} href="${room.roomlink || "#"}">
+        <a  id=${room.id} href="${room.roomLink || "#"}">
         <div class="cards__card">
         <span class="cards__card__topicRoom">
             ${room.subTopic}
@@ -41,4 +41,5 @@ export default function getTemplate(room = new Room()){
         </div>
         </div>
         </a>`
+
 }

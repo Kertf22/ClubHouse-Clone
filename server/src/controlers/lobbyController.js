@@ -23,6 +23,7 @@ export default class LobbyController {
     #updateLobbyRooms(socket, activeRooms ){
         socket.emit(constants.events.LOBBY_UPDATED, activeRooms)
     }
+    
     getEvents(){
         const functions = Reflect.ownKeys(LobbyController.prototype)
         .filter(fn => fn !== 'constructor')

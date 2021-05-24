@@ -1,0 +1,20 @@
+{
+  "name": "clubhouse_clone",
+  "version": "1.0.0",
+  "description": "- [] O app deve funcionar na Web, Android e IOS\r - Login\r   - [x] Deve ter login com GitHub\r     - [x] Se houver dados do usuario em localStorage deve ir para lobby direto",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kertf22/ClubHouse-Clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kertf22/ClubHouse-Clone/issues"
+  },
+  "homepage": "https://github.com/Kertf22/ClubHouse-Clone#readme"
+}

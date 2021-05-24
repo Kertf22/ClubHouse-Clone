@@ -32,7 +32,6 @@ export default class RoomSocketBuilder extends SocketBuilder{
 
         socket.on(constants.events.LOBBY_UPDATED, this.OnRoomUpdated)
         socket.on(constants.events.UPGRADE_USER_PERMISSION,this.OnUserProfileUpgrade)
-
         socket.on(constants.events.SPEAK_REQUEST,this.OnSpeakRequested)
 
         return socket;

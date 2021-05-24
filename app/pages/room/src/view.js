@@ -22,6 +22,9 @@ export default class View {
         roomTopic.innerHTML = topic
     }
 
+    static redirectToLogin() {
+        window.location = constants.pages.login
+    }
     static updateAttendeesOnGrid(users) {
         users.forEach(item => View.addAttendeeOnGrid(item))
     }
